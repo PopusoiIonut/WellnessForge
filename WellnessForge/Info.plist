@@ -53,6 +53,11 @@
         <string>processing</string>
     </array>
 
+    <key>BGTaskSchedulerPermittedIdentifiers</key>
+    <array>
+        <string>BitForge-Lab.WellnessForge.refresh</string>
+    </array>
+
     <key>NSCameraUsageDescription</key>
     <string>WellnessForge AI uses the camera for meal scanning and AR workout posture guidance.</string>
     

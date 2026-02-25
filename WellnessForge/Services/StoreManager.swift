@@ -51,18 +51,18 @@ class StoreManager: ObservableObject {
             print("StoreKit: Fetched \(products.count) products.")
             
             if products.isEmpty {
-                self.fetchError = "No products found in the store. Check StoreKit configuration."
-                print("StoreKit Error: Fetch returned zero products. Ensure .storekit file is active in the scheme.")
+                let bundleId = Bundle.main.bundleIdentifier ?? "unknown"
+                self.fetchError = "No products found for ID '\(productIds.joined(separator: ", "))' (Bundle ID: \(bundleId)). Ensure identifiers match App Store Connect and agreements are active."
+                print("StoreKit Error: Fetch returned zero products for bundle \(bundleId).")
                 
                 #if DEBUG
-                // Enable a mock UI fallback for testing when StoreKit refuses to bind properly
                 self.mockFallbackAvailable = true
-                // Do NOT clear fetchError here, otherwise SubscriptionView bypasses the error state harboring our mock button.
                 #endif
             }
         } catch {
-            self.fetchError = "Fetch Error: \(error.localizedDescription)"
-            print("StoreKit Critical Error: \(error)")
+            let bundleId = Bundle.main.bundleIdentifier ?? "unknown"
+            self.fetchError = "StoreKit Fetch Error: \(error.localizedDescription) (Bundle: \(bundleId))"
+            print("StoreKit Critical Error for \(bundleId): \(error)")
         }
         isLoading = false
     }
