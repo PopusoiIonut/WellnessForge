@@ -86,9 +86,22 @@ struct SubscriptionView: View {
                         if storeManager.mockFallbackAvailable {
                             Button(action: {
                                 UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-                                // Simulator mock - just dismiss as if purchased
-                                storeManager.purchasedSubscriptions.append("wellness_pro_yearly")
-                                dismiss()
+                                withAnimation {
+                                    self.isLocalPurchasing = true
+                                }
+                                
+                                Task {
+                                    // Artificial delay for verification
+                                    try? await Task.sleep(nanoseconds: 1_500_000_000) // 1.5 seconds
+                                    
+                                    await MainActor.run {
+                                        storeManager.purchasedSubscriptions.append("wellness_pro_yearly")
+                                        withAnimation {
+                                            self.isLocalPurchasing = false
+                                        }
+                                        dismiss()
+                                    }
+                                }
                             }) {
                                 HStack {
                                     VStack(alignment: .leading, spacing: 4) {
@@ -104,10 +117,7 @@ struct SubscriptionView: View {
                                 }
                                 .padding()
                                 .background(.white.opacity(0.1), in: RoundedRectangle(cornerRadius: 16))
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 16)
-                                        .stroke(Color.clear, lineWidth: 2)
-                                )
+                                .contentShape(RoundedRectangle(cornerRadius: 16))
                             }
                             .buttonStyle(.plain)
                             .padding(.top, 10)
@@ -130,8 +140,22 @@ struct SubscriptionView: View {
                         ForEach(storeManager.subscriptions) { product in
                             Button(action: {
                                 UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                                withAnimation {
+                                    self.isLocalPurchasing = true
+                                }
                                 Task {
-                                    try? await storeManager.buy(product)
+                                    do {
+                                        try await storeManager.buy(product)
+                                        if storeManager.isPremium {
+                                            dismiss()
+                                        }
+                                    } catch {
+                                        self.purchaseError = error.localizedDescription
+                                        self.showError = true
+                                    }
+                                    withAnimation {
+                                        self.isLocalPurchasing = false
+                                    }
                                 }
                             }) {
                                 HStack {
@@ -152,9 +176,10 @@ struct SubscriptionView: View {
                                     RoundedRectangle(cornerRadius: 16)
                                         .stroke(storeManager.purchasedSubscriptions.contains(product.id) ? Color.purple : Color.clear, lineWidth: 2)
                                 )
+                                .contentShape(RoundedRectangle(cornerRadius: 16))
                             }
                             .buttonStyle(.plain)
-                            .disabled(storeManager.purchasedSubscriptions.contains(product.id))
+                            .disabled(storeManager.purchasedSubscriptions.contains(product.id) || storeManager.isPurchasing)
                         }
                         
                         if !storeManager.isPremium {
@@ -179,14 +204,53 @@ struct SubscriptionView: View {
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .padding(.top, 10)
+                .disabled(storeManager.isPurchasing)
             }
             .padding(.horizontal)
             .opacity(appearAnimate ? 1.0 : 0)
+            .blur(radius: storeManager.isPurchasing ? 3 : 0)
+            
+            if storeManager.isPurchasing || isLocalPurchasing {
+                ZStack {
+                    Color.black.opacity(0.6).ignoresSafeArea()
+                    VStack(spacing: 20) {
+                        ProgressView()
+                            .tint(.white)
+                            .scaleEffect(2.0)
+                            .padding()
+                        
+                        Text("Connecting to App Store...")
+                            .font(.headline)
+                            .foregroundStyle(.white)
+                        
+                        Text("Please do not close the app.")
+                            .font(.caption)
+                            .foregroundStyle(.white.opacity(0.7))
+                    }
+                    .padding(40)
+                    .background(.ultraThinMaterial)
+                    .clipShape(RoundedRectangle(cornerRadius: 24))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 24)
+                            .stroke(.white.opacity(0.2), lineWidth: 1)
+                    )
+                    .shadow(color: .black.opacity(0.3), radius: 20)
+                }
+                .transition(.opacity)
+                .zIndex(100)
+            }
             
             Text("Cancel anytime. Terms of Service & Privacy Policy apply.")
                 .font(.system(size: 10))
                 .foregroundStyle(.tertiary)
                 .padding(.bottom)
+        }
+        .alert("Purchase Failed", isPresented: $showError) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            if let error = purchaseError {
+                Text(error)
+            }
         }
         .onAppear {
             withAnimation(.easeOut(duration: 0.8)) {
@@ -199,4 +263,7 @@ struct SubscriptionView: View {
     }
     
     @State private var appearAnimate = false
+    @State private var showError = false
+    @State private var purchaseError: String? = nil
+    @State private var isLocalPurchasing = false
 }

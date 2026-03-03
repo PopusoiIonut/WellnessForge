@@ -9,6 +9,7 @@ struct DashboardView: View {
     @StateObject private var weatherService = WeatherService()
     @State private var showMealScanner = false
     @State private var showARWorkout = false
+    @State private var showPaywall = false
 
     @Environment(\.modelContext) private var modelContext
     @Query private var plans: [WellnessPlan]
@@ -108,7 +109,12 @@ struct DashboardView: View {
                             }
                         } else {
                             // Upsell Banner
-                            Button(action: { /* App handles paywall via MainContainer usually, or trigger a state here */ }) {
+                            Button(action: {
+                                UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                                withAnimation {
+                                    showPaywall = true
+                                }
+                            }) {
                                 HStack {
                                     Image(systemName: "sparkles")
                                     Text("Unlock WellnessForge PRO")
@@ -158,6 +164,7 @@ struct DashboardView: View {
                 }
                 .sheet(isPresented: $showMealScanner) { MealScannerView() }
                 .fullScreenCover(isPresented: $showARWorkout) { WorkoutARView() }
+                .sheet(isPresented: $showPaywall) { SubscriptionView() }
                 
                 if let error = healthKit.error {
                     ErrorOverlay(error: error) {

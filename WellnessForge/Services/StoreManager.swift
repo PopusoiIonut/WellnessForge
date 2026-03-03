@@ -1,10 +1,12 @@
 import StoreKit
 
+@MainActor
 class StoreManager: ObservableObject {
     @Published var subscriptions: [Product] = []
     @Published var purchasedSubscriptions: [String] = []
     
     @Published var isLoading: Bool = false
+    @Published var isPurchasing: Bool = false
     @Published var fetchError: String? = nil
     
     // Fallback UI mock string if StoreKit is entirely broken by Xcode
@@ -36,7 +38,6 @@ class StoreManager: ObservableObject {
         }
     }
 
-    @MainActor
     func fetchProducts() async {
         isLoading = true
         fetchError = nil
@@ -51,9 +52,7 @@ class StoreManager: ObservableObject {
             print("StoreKit: Fetched \(products.count) products.")
             
             if products.isEmpty {
-                let bundleId = Bundle.main.bundleIdentifier ?? "unknown"
-                self.fetchError = "No products found for ID '\(productIds.joined(separator: ", "))' (Bundle ID: \(bundleId)). Ensure identifiers match App Store Connect and agreements are active."
-                print("StoreKit Error: Fetch returned zero products for bundle \(bundleId).")
+                self.fetchError = "No products found for ID '\(productIds.joined(separator: ", "))'. Ensure identifiers match App Store Connect."
                 
                 #if DEBUG
                 self.mockFallbackAvailable = true
@@ -61,13 +60,12 @@ class StoreManager: ObservableObject {
             }
         } catch {
             let bundleId = Bundle.main.bundleIdentifier ?? "unknown"
-            self.fetchError = "StoreKit Fetch Error: \(error.localizedDescription) (Bundle: \(bundleId))"
+            self.fetchError = "StoreKit Fetch Error: \(error.localizedDescription)"
             print("StoreKit Critical Error for \(bundleId): \(error)")
         }
         isLoading = false
     }
 
-    @MainActor
     func updatePurchasedProducts() async {
         var purchased: [String] = []
         for await result in Transaction.currentEntitlements {
@@ -81,18 +79,26 @@ class StoreManager: ObservableObject {
     }
 
     func buy(_ product: Product) async throws {
-        let result = try await product.purchase()
+        isPurchasing = true
+        defer { isPurchasing = false }
         
-        switch result {
-        case .success(let verification):
-            if case .verified(let transaction) = verification {
-                await updatePurchasedProducts()
-                await transaction.finish()
+        do {
+            let result = try await product.purchase()
+            
+            switch result {
+            case .success(let verification):
+                if case .verified(let transaction) = verification {
+                    await updatePurchasedProducts()
+                    await transaction.finish()
+                }
+            case .userCancelled, .pending:
+                break
+            @unknown default:
+                break
             }
-        case .userCancelled, .pending:
-            break
-        @unknown default:
-            break
+        } catch {
+            print("StoreKit Purchase Error: \(error)")
+            throw error
         }
     }
     
