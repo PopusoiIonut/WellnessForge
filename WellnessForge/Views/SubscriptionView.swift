@@ -240,10 +240,21 @@ struct SubscriptionView: View {
                 .zIndex(100)
             }
             
-            Text("Cancel anytime. Terms of Service & Privacy Policy apply.")
+            VStack(spacing: 8) {
+                Text("Cancel anytime. By subscribing, you agree to our Terms of Use and Privacy Policy.")
+                    .font(.system(size: 10))
+                    .foregroundStyle(.tertiary)
+                    .multilineTextAlignment(.center)
+                
+                HStack(spacing: 12) {
+                    Link("Terms of Use (EULA)", destination: URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")!)
+                    Text("•")
+                    Link("Privacy Policy", destination: URL(string: "https://github.com/PopusoiIonut/WellnessForge/blob/main/privacypolicy.txt")!)
+                }
                 .font(.system(size: 10))
-                .foregroundStyle(.tertiary)
-                .padding(.bottom)
+                .foregroundStyle(.purple)
+            }
+            .padding(.bottom)
         }
         .alert("Purchase Failed", isPresented: $showError) {
             Button("OK", role: .cancel) { }

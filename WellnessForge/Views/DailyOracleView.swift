@@ -81,6 +81,26 @@ struct DailyOracleView: View {
                                 Text("Wellness Score: \(healthKit.snapshot.wellnessScore) / 100")
                             }
                             .font(.footnote).foregroundStyle(.secondary)
+                            
+                            // --- Medical Citation & Disclaimer (Guideline 1.4.1) ---
+                            VStack(spacing: 6) {
+                                Divider()
+                                Text("Predictions are AI-generated based on HealthKit data. They do not constitute medical diagnosis.")
+                                    .font(.system(size: 10))
+                                    .foregroundStyle(.tertiary)
+                                    .multilineTextAlignment(.center)
+                                
+                                HStack {
+                                    Text("Information sourced from:")
+                                    Link("WHO Guidelines", destination: URL(string: "https://www.who.int/news-room/fact-sheets/")!)
+                                        .foregroundStyle(.blue)
+                                }
+                                .font(.system(size: 10))
+                                .foregroundStyle(.tertiary)
+                            }
+                            .padding(.horizontal, 24)
+                            .padding(.top, 8)
+                            // ----------------------------------------------------
 
                             Spacer(minLength: 40)
                         }
