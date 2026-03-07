@@ -86,7 +86,7 @@ struct DailyOracleView: View {
                             VStack(spacing: 6) {
                                 Divider()
                                 Text("Predictions are AI-generated based on HealthKit data. They do not constitute medical diagnosis.")
-                                    .font(.system(size: 10))
+                                    .font(.caption2)
                                     .foregroundStyle(.tertiary)
                                     .multilineTextAlignment(.center)
                                 
@@ -94,8 +94,9 @@ struct DailyOracleView: View {
                                     Text("Information sourced from:")
                                     Link("WHO Guidelines", destination: URL(string: "https://www.who.int/news-room/fact-sheets/")!)
                                         .foregroundStyle(.blue)
+                                        .padding(.vertical, 8)
                                 }
-                                .font(.system(size: 10))
+                                .font(.caption2)
                                 .foregroundStyle(.tertiary)
                             }
                             .padding(.horizontal, 24)

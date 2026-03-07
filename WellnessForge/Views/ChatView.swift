@@ -61,23 +61,25 @@ struct ChatView: View {
                 // --- Medical Citation & Disclaimer (Guideline 1.4.1) ---
                 VStack(spacing: 4) {
                     Text("AI Coach recommendations are for informational purposes only and do not replace professional medical advice.")
-                        .font(.system(size: 10))
+                        .font(.caption2)
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
                     
                     HStack(spacing: 0) {
                         Text("Sources: ")
-                            .font(.system(size: 10))
+                            .font(.caption2)
                             .foregroundStyle(.secondary)
                         Link("Apple Health Guidelines", destination: URL(string: "https://www.apple.com/ios/health/")!)
-                            .font(.system(size: 10))
+                            .font(.caption2)
                             .foregroundStyle(.blue)
+                            .padding(.vertical, 8)
                         Text(" & ")
-                            .font(.system(size: 10))
+                            .font(.caption2)
                             .foregroundStyle(.secondary)
                         Link("World Health Organization", destination: URL(string: "https://www.who.int/")!)
-                            .font(.system(size: 10))
+                            .font(.caption2)
                             .foregroundStyle(.blue)
+                            .padding(.vertical, 8)
                     }
                 }
                 .padding(.horizontal)

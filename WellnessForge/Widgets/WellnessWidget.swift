@@ -45,7 +45,7 @@ struct WellnessWidgetEntryView : View {
             Spacer()
             
             Text("Updated \(entry.date, style: .time)")
-                .font(.system(size: 8))
+                .font(.caption2)
                 .foregroundStyle(.tertiary)
         }
         .padding()

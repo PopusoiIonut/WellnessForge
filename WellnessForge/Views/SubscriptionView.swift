@@ -241,19 +241,22 @@ struct SubscriptionView: View {
             }
             
             VStack(spacing: 8) {
-                Text("Cancel anytime. By subscribing, you agree to our Terms of Use and Privacy Policy.")
-                    .font(.system(size: 10))
+                Text("A purchase will be applied to your iTunes account on confirmation. Subscriptions will automatically renew unless canceled within 24-hours before the end of the current period. You can cancel anytime with your iTunes account settings. For more information, see our Terms of Use and Privacy Policy.")
+                    .font(.caption2)
                     .foregroundStyle(.tertiary)
                     .multilineTextAlignment(.center)
                 
                 HStack(spacing: 12) {
                     Link("Terms of Use (EULA)", destination: URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")!)
+                        .padding(.vertical, 8)
                     Text("•")
                     Link("Privacy Policy", destination: URL(string: "https://github.com/PopusoiIonut/WellnessForge/blob/main/privacypolicy.txt")!)
+                        .padding(.vertical, 8)
                 }
-                .font(.system(size: 10))
+                .font(.caption)
                 .foregroundStyle(.purple)
             }
+            .padding(.horizontal)
             .padding(.bottom)
         }
         .alert("Purchase Failed", isPresented: $showError) {

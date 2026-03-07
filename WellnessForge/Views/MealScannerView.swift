@@ -57,7 +57,7 @@ struct MealScannerView: View {
                         VStack(spacing: 16) {
                             HStack {
                                 Text("Detected Item")
-                                    .font(.system(size: 10, weight: .bold))
+                                    .font(.caption2.bold())
                                     .foregroundStyle(.yellow)
                                     .tracking(2)
                                 Spacer()
@@ -113,7 +113,7 @@ struct MealScannerView: View {
                             
                             if !nutritionService.rawLabel.isEmpty {
                                 Text(nutritionService.rawLabel)
-                                    .font(.system(size: 8).monospaced())
+                                    .font(.caption2.monospaced())
                                     .foregroundStyle(.white.opacity(0.4))
                                     .padding(.top, 4)
                             }
@@ -144,7 +144,7 @@ struct NutritionMiniTile: View {
     let value: String
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
-            Text(label).font(.system(size: 10, weight: .bold)).foregroundStyle(.secondary)
+            Text(label).font(.caption2.bold()).foregroundStyle(.secondary)
             Text(value).font(.headline).foregroundStyle(.white)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
