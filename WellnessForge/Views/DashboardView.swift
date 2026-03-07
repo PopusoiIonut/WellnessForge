@@ -320,7 +320,7 @@ struct ProToolButton: View {
                     .font(.subheadline).bold()
                     .foregroundStyle(.primary)
                 Text(subtitle)
-                    .font(.caption2)
+                    .font(.caption)
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
             }

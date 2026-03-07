@@ -86,8 +86,8 @@ struct DailyOracleView: View {
                             VStack(spacing: 6) {
                                 Divider()
                                 Text("Predictions are AI-generated based on HealthKit data. They do not constitute medical diagnosis.")
-                                    .font(.caption2)
-                                    .foregroundStyle(.tertiary)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
                                     .multilineTextAlignment(.center)
                                 
                                 HStack {
@@ -96,8 +96,8 @@ struct DailyOracleView: View {
                                         .foregroundStyle(.blue)
                                         .padding(.vertical, 8)
                                 }
-                                .font(.caption2)
-                                .foregroundStyle(.tertiary)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
                             }
                             .padding(.horizontal, 24)
                             .padding(.top, 8)
